@@ -16,30 +16,47 @@
 
 #include QMK_KEYBOARD_H
 #include "muse.h"
-
+#include "keymap_french.h"
 
 enum planck_layers {
-  _QWERTY,
+  _BASE,
   _LOWER,
   _RAISE,
   _ADJUST
 };
 
 enum planck_keycodes {
-  QWERTY = SAFE_RANGE,
-  COLEMAK,
-  DVORAK,
-  PLOVER,
-  BACKLIT,
-  EXT_PLV
+  BASE = SAFE_RANGE,
+};
+
+enum {
+    CT_CLN,
+    CT_PAR,
+    CT_SQUARE_BRA,
+    CT_ANGLE_BRA,
+    CT_BRACES,
+    CT_DOT,
+    CT_HYPHEN,
+    CT_DIV,
+    CT_STAR,
+    CT_PLUS,
+    CT_VOL,
+    CT_ESC,
+    CT_META,
+    CT_DEL,
+    CT_TAB,
+    CT_EQUAL,
+    CT_F3,
+    CT_F4,
+    CT_F5,
+    CT_ALTF3,
+    CT_ALTF4,
 };
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-
-/* Qwerty
+/* Base
  * ,-----------------------------------------------------------------------------------.
  * | Tab  |   Q  |   W  |   E  |   R  |   T  |   Y  |   U  |   I  |   O  |   P  | Bksp |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -50,11 +67,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * | Brite| Ctrl | Alt  | GUI  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
  * `-----------------------------------------------------------------------------------'
  */
-[_QWERTY] = LAYOUT_planck_grid(
+[_BASE] = LAYOUT_planck_grid(
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
     KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT ,
-    BACKLIT, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    TD(CT_CLN), KC_DOT,  KC_SLSH, KC_ENT ,
+    _______, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 ),
 
 /* Lower
@@ -98,7 +115,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |      | Reset|Debug | RGB  |RGBMOD| HUE+ | HUE- | SAT+ | SAT- |BRGTH+|BRGTH-|  Del |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |MUSmod|Aud on|Audoff|AGnorm|AGswap|Qwerty|Colemk|Dvorak|Plover|      |
+ * |      |      |MUSmod|Aud on|Audoff|AGnorm|AGswap|Base  |Colemk|Dvorak|      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |Voice-|Voice+|Mus on|Musoff|MIDIon|MIDIof|TermOn|TermOf|      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -106,89 +123,95 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid(
-    _______, QK_BOOT,   DEBUG,   RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,  RGB_VAI, RGB_VAD, KC_DEL ,
-    _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK,  DVORAK,  PLOVER,  _______,
+    _______, QK_BOOT,   DEBUG,   _______,   _______,   _______,   _______,   _______,   _______,   _______,   _______, KC_DEL ,
+    _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, BASE,  _______,  _______,  _______,  _______,
     _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
 )
 
 };
 
-#ifdef AUDIO_ENABLE
-  float plover_song[][2]     = SONG(PLOVER_SOUND);
-  float plover_gb_song[][2]  = SONG(PLOVER_GOODBYE_SOUND);
-#endif
-
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    case QWERTY:
-      if (record->event.pressed) {
-        print("mode just switched to qwerty and this is a huge string\n");
-        set_single_persistent_default_layer(_QWERTY);
-      }
-      return false;
-      break;
-    case COLEMAK:
-      if (record->event.pressed) {
-        set_single_persistent_default_layer(_COLEMAK);
-      }
-      return false;
-      break;
-    case DVORAK:
-      if (record->event.pressed) {
-        set_single_persistent_default_layer(_DVORAK);
-      }
-      return false;
-      break;
-    case BACKLIT:
-      if (record->event.pressed) {
-        register_code(KC_RSFT);
-        #ifdef BACKLIGHT_ENABLE
-          backlight_step();
-        #endif
-        #ifdef KEYBOARD_planck_rev5
-          writePinLow(E6);
-        #endif
-      } else {
-        unregister_code(KC_RSFT);
-        #ifdef KEYBOARD_planck_rev5
-          writePinHigh(E6);
-        #endif
-      }
-      return false;
-      break;
-    case PLOVER:
-      if (record->event.pressed) {
-        #ifdef AUDIO_ENABLE
-          stop_all_notes();
-          PLAY_SONG(plover_song);
-        #endif
-        layer_off(_RAISE);
-        layer_off(_LOWER);
-        layer_off(_ADJUST);
-        layer_on(_PLOVER);
-        if (!eeconfig_is_enabled()) {
-            eeconfig_init();
+typedef struct {
+    uint16_t tap;
+    uint16_t hold;
+    uint16_t held;
+} tap_dance_tap_hold_t;
+
+void tap_dance_tap_hold_finished(qk_tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (state->pressed) {
+        if (state->count == 1
+#ifndef PERMISSIVE_HOLD
+            && !state->interrupted
+#endif
+        ) {
+            register_code16(tap_hold->hold);
+            tap_hold->held = tap_hold->hold;
+        } else {
+            register_code16(tap_hold->tap);
+            tap_hold->held = tap_hold->tap;
         }
-        keymap_config.raw = eeconfig_read_keymap();
-        keymap_config.nkro = 1;
-        eeconfig_update_keymap(keymap_config.raw);
-      }
-      return false;
-      break;
-    case EXT_PLV:
+    }
+}
+
+void tap_dance_tap_hold_reset(qk_tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (tap_hold->held) {
+        unregister_code16(tap_hold->held);
+        tap_hold->held = 0;
+    }
+}
+
+#define ACTION_TAP_DANCE_TAP_HOLD(tap, hold) \
+    { .fn = {NULL, tap_dance_tap_hold_finished, tap_dance_tap_hold_reset}, .user_data = (void *)&((tap_dance_tap_hold_t){tap, hold, 0}), }
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [CT_CLN] = ACTION_TAP_DANCE_TAP_HOLD(KC_COLN, KC_SCLN),
+    [CT_PAR] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_PAREN,KC_RIGHT_PAREN),
+    [CT_SQUARE_BRA] = ACTION_TAP_DANCE_TAP_HOLD(KC_LBRACKET,KC_RBRACKET),
+    [CT_ANGLE_BRA] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_ANGLE_BRACKET,KC_RIGHT_ANGLE_BRACKET),
+    [CT_BRACES] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_CURLY_BRACE,KC_RIGHT_CURLY_BRACE),
+    [CT_DOT] = ACTION_TAP_DANCE_TAP_HOLD(FR_DOT, FR_COLN),
+    [CT_HYPHEN] = ACTION_TAP_DANCE_TAP_HOLD(FR_MINS,FR_UNDS),
+    [CT_DIV] = ACTION_TAP_DANCE_TAP_HOLD(FR_SLSH,FR_PERC),
+    [CT_STAR] = ACTION_TAP_DANCE_TAP_HOLD(FR_ASTR, FR_AMPR),
+    [CT_PLUS] = ACTION_TAP_DANCE_TAP_HOLD(KC_KP_PLUS,FR_PIPE),
+    [CT_VOL] = ACTION_TAP_DANCE_TAP_HOLD(KC_KB_VOLUME_DOWN,KC_KB_MUTE),
+    [CT_ESC] = ACTION_TAP_DANCE_TAP_HOLD(KC_ESCAPE,KC_KB_POWER),
+    [CT_META] = ACTION_TAP_DANCE_TAP_HOLD(KC_LGUI,LGUI(FR_L)),
+    [CT_DEL] = ACTION_TAP_DANCE_TAP_HOLD(KC_DEL,KC_HOME),
+    [CT_TAB] = ACTION_TAP_DANCE_TAP_HOLD(KC_TAB,LOWER),
+    [CT_EQUAL] = ACTION_TAP_DANCE_TAP_HOLD(KC_KP_EQUAL, RAISE),
+    [CT_F3] = ACTION_TAP_DANCE_TAP_HOLD(FR_B,KC_F3),
+    [CT_F4] = ACTION_TAP_DANCE_TAP_HOLD(FR_X,KC_F4),
+    [CT_F5] = ACTION_TAP_DANCE_TAP_HOLD(FR_Y,KC_F5),
+    [CT_ALTF3] = ACTION_TAP_DANCE_TAP_HOLD(FR_Q,LALT(KC_F3)),
+    [CT_ALTF4] = ACTION_TAP_DANCE_TAP_HOLD(FR_U,LALT(KC_F4)),
+};
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  qk_tap_dance_action_t *action;
+  switch (keycode) {
+    case BASE:
       if (record->event.pressed) {
-        #ifdef AUDIO_ENABLE
-          PLAY_SONG(plover_gb_song);
-        #endif
-        layer_off(_PLOVER);
+        print("mode just switched to base and this is a huge string\n");
+        set_single_persistent_default_layer(_BASE);
       }
       return false;
       break;
+
+    case TD(CT_CLN):  // list all tap dance keycodes with tap-hold configurations
+        action = &tap_dance_actions[TD_INDEX(keycode)];
+        if (!record->event.pressed && action->state.count && !action->state.finished) {
+            tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
+            tap_code16(tap_hold->tap);
+        }
   }
   return true;
 }
@@ -239,14 +262,8 @@ bool dip_switch_update_user(uint8_t index, bool active) {
             static bool play_sound = false;
 #endif
             if (active) {
-#ifdef AUDIO_ENABLE
-                if (play_sound) { PLAY_SONG(plover_song); }
-#endif
                 layer_on(_ADJUST);
             } else {
-#ifdef AUDIO_ENABLE
-                if (play_sound) { PLAY_SONG(plover_gb_song); }
-#endif
                 layer_off(_ADJUST);
             }
 #ifdef AUDIO_ENABLE
