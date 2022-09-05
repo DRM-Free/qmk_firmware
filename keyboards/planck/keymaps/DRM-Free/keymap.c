@@ -36,6 +36,7 @@ enum {
     CT_ANGLE_BRA,
     CT_BRACES,
     CT_DOT,
+    CT_COMMA,
     CT_HYPHEN,
     CT_DIV,
     CT_STAR,
@@ -51,6 +52,11 @@ enum {
     CT_F5,
     CT_ALTF3,
     CT_ALTF4,
+    CT_EXCLM,
+    DT_META_L,
+    DT_CRTL_C,
+    DT_CRTL_V,
+    DT_CRTL_Q,
 };
 
 #define LOWER MO(_LOWER)
@@ -68,10 +74,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_BASE] = LAYOUT_planck_grid(
-    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
-    KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    TD(CT_CLN), KC_DOT,  KC_SLSH, KC_ENT ,
-    _______, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+    CT_ESC,  FR_V,    CT_F3,    CT_F4,    CT_F5,    FR_Z,    FR_J,    FR_F,    FR_G,    FR_P,    FR_K,    CT_EXCLM,
+    CT_VOL,  CT_DEL,    CT_ALTF3,    CT_ALTF4,    FR_N,    FR_O,    FR_I,    FR_L,    FR_M,    FR_D,    CT_SQUARE_BRA, CT_BRACES,
+    _______, _______,    _______,    _______,    _______,    FR_E,    FR_A,    _______,    _______, _______,  CT_PAR, CT_PLUS,
+    CT_META, CT_COMMA, CT_DOT, KC_ENTER, CT_TAB,   KC_SPC,  KC_SPC,  CT_EQUAL,   CT_ANGLE_BRA, KC_DOWN, KC_UP,   KC_RGHT
 ),
 
 /* Lower
@@ -178,6 +184,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [CT_ANGLE_BRA] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_ANGLE_BRACKET,KC_RIGHT_ANGLE_BRACKET),
     [CT_BRACES] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_CURLY_BRACE,KC_RIGHT_CURLY_BRACE),
     [CT_DOT] = ACTION_TAP_DANCE_TAP_HOLD(FR_DOT, FR_COLN),
+    [CT_COMMA] = ACTION_TAP_DANCE_TAP_HOLD(FR_COMM, FR_SCLN),
     [CT_HYPHEN] = ACTION_TAP_DANCE_TAP_HOLD(FR_MINS,FR_UNDS),
     [CT_DIV] = ACTION_TAP_DANCE_TAP_HOLD(FR_SLSH,FR_PERC),
     [CT_STAR] = ACTION_TAP_DANCE_TAP_HOLD(FR_ASTR, FR_AMPR),
@@ -193,6 +200,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [CT_F5] = ACTION_TAP_DANCE_TAP_HOLD(FR_Y,KC_F5),
     [CT_ALTF3] = ACTION_TAP_DANCE_TAP_HOLD(FR_Q,LALT(KC_F3)),
     [CT_ALTF4] = ACTION_TAP_DANCE_TAP_HOLD(FR_U,LALT(KC_F4)),
+    [CT_EXCLM] = ACTION_TAP_DANCE_TAP_HOLD(FR_EXLM,FR_QUES),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -206,7 +214,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
 
-    case TD(CT_CLN):  // list all tap dance keycodes with tap-hold configurations
+    case TD(CT_CLN) ... TD(CT_EXCLM):  // list all tap dance keycodes with tap-hold configurations
         action = &tap_dance_actions[TD_INDEX(keycode)];
         if (!record->event.pressed && action->state.count && !action->state.finished) {
             tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
@@ -258,17 +266,11 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 bool dip_switch_update_user(uint8_t index, bool active) {
     switch (index) {
         case 0: {
-#ifdef AUDIO_ENABLE
-            static bool play_sound = false;
-#endif
             if (active) {
                 layer_on(_ADJUST);
             } else {
                 layer_off(_ADJUST);
             }
-#ifdef AUDIO_ENABLE
-            play_sound = true;
-#endif
             break;
         }
         case 1:
@@ -282,24 +284,6 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 }
 
 void matrix_scan_user(void) {
-#ifdef AUDIO_ENABLE
-    if (muse_mode) {
-        if (muse_counter == 0) {
-            uint8_t muse_note = muse_offset + SCALE[muse_clock_pulse()];
-            if (muse_note != last_muse_note) {
-                stop_note(compute_freq_for_midi_note(last_muse_note));
-                play_note(compute_freq_for_midi_note(muse_note), 0xF);
-                last_muse_note = muse_note;
-            }
-        }
-        muse_counter = (muse_counter + 1) % muse_tempo;
-    } else {
-        if (muse_counter) {
-            stop_all_notes();
-            muse_counter = 0;
-        }
-    }
-#endif
 }
 
 bool music_mask_user(uint16_t keycode) {
