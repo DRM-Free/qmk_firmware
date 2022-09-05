@@ -42,25 +42,27 @@ enum {
     CT_STAR,
     CT_PLUS,
     CT_VOL,
-    CT_ESC,
-    CT_META,
     CT_DEL,
     CT_TAB,
     CT_EQUAL,
+    CT_TILD,
     CT_F3,
     CT_F4,
     CT_F5,
     CT_ALTF3,
     CT_ALTF4,
     CT_EXCLM,
+    CT_U,
+    DT_ESC,
+    DT_A,
+    DT_E,
     DT_META_L,
-    DT_CRTL_C,
-    DT_CRTL_V,
-    DT_CRTL_Q,
 };
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
+#define MT_BAK MT(KC_LEFT_SHIFT,KC_BACKSPACE)
+#DEFINE
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Base
  * ,-----------------------------------------------------------------------------------.
@@ -74,10 +76,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_BASE] = LAYOUT_planck_grid(
-    CT_ESC,  FR_V,    CT_F3,    CT_F4,    CT_F5,    FR_Z,    FR_J,    FR_F,    FR_G,    FR_P,    FR_K,    CT_EXCLM,
-    CT_VOL,  CT_DEL,    CT_ALTF3,    CT_ALTF4,    FR_N,    FR_O,    FR_I,    FR_L,    FR_M,    FR_D,    CT_SQUARE_BRA, CT_BRACES,
-    _______, _______,    _______,    _______,    _______,    FR_E,    FR_A,    _______,    _______, _______,  CT_PAR, CT_PLUS,
-    CT_META, CT_COMMA, CT_DOT, KC_ENTER, CT_TAB,   KC_SPC,  KC_SPC,  CT_EQUAL,   CT_ANGLE_BRA, KC_DOWN, KC_UP,   KC_RGHT
+    DT_ESC,  DT_CRTL_V,    CT_F3,    CT_F4,    CT_F5,    FR_Z,    FR_J,    FR_F,    FR_G,    FR_P,    FR_K,    CT_EXCLM,
+    CT_VOL,  CT_DEL,    CT_ALTF3,    CT_ALTF4,    FR_N,    FR_O,    FR_I,    FR_L,    FR_M,    CT_TILD,    CT_SQUARE_BRA, CT_BRACES,
+    MT_BAK, _______,    _______,    _______,    _______,    FR_E,    FR_A,    _______,    _______, _______,  CT_PAR, CT_PLUS,
+    DT_META_L, CT_COMMA, CT_DOT, KC_ENTER, CT_TAB,   KC_SPC,  KC_SPC,  CT_EQUAL,   CT_ANGLE_BRA, KC_DOWN, KC_UP,   KC_RGHT
 ),
 
 /* Lower
@@ -190,17 +192,24 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [CT_STAR] = ACTION_TAP_DANCE_TAP_HOLD(FR_ASTR, FR_AMPR),
     [CT_PLUS] = ACTION_TAP_DANCE_TAP_HOLD(KC_KP_PLUS,FR_PIPE),
     [CT_VOL] = ACTION_TAP_DANCE_TAP_HOLD(KC_KB_VOLUME_DOWN,KC_KB_MUTE),
-    [CT_ESC] = ACTION_TAP_DANCE_TAP_HOLD(KC_ESCAPE,KC_KB_POWER),
-    [CT_META] = ACTION_TAP_DANCE_TAP_HOLD(KC_LGUI,LGUI(FR_L)),
     [CT_DEL] = ACTION_TAP_DANCE_TAP_HOLD(KC_DEL,KC_HOME),
     [CT_TAB] = ACTION_TAP_DANCE_TAP_HOLD(KC_TAB,LOWER),
     [CT_EQUAL] = ACTION_TAP_DANCE_TAP_HOLD(KC_KP_EQUAL, RAISE),
+    [CT_TILD] = ACTION_TAP_DANCE_TAP_HOLD(FR_D, FR_TILD),
     [CT_F3] = ACTION_TAP_DANCE_TAP_HOLD(FR_B,KC_F3),
     [CT_F4] = ACTION_TAP_DANCE_TAP_HOLD(FR_X,KC_F4),
     [CT_F5] = ACTION_TAP_DANCE_TAP_HOLD(FR_Y,KC_F5),
-    [CT_ALTF3] = ACTION_TAP_DANCE_TAP_HOLD(FR_Q,LALT(KC_F3)),
-    [CT_ALTF4] = ACTION_TAP_DANCE_TAP_HOLD(FR_U,LALT(KC_F4)),
+    [CT_ALTF3] = ACTION_TAP_DANCE_TAP_HOLD(FR_U,LALT(KC_F3)),
+    [CT_ALTF4] = ACTION_TAP_DANCE_TAP_HOLD(FR_N,LALT(KC_F4)),
     [CT_EXCLM] = ACTION_TAP_DANCE_TAP_HOLD(FR_EXLM,FR_QUES),
+    [CT_U] = ACTION_TAP_DANCE_TAP_HOLD(FR_U, FR_EACU)
+    [DT_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_ESCAPE,KC_KB_POWER),
+    [DT_A] = ACTION_TAP_DANCE_DOUBLE(ACTION_TAP_DANCE_TAP_HOLD(FR_A, FR_AGRV),FR_AT)
+    [DT_E] = ACTION_TAP_DANCE_DOUBLE(ACTION_TAP_DANCE_TAP_HOLD(FR_E, FR_EACU),FR_EGRV)
+    [DT_META_L] = ACTION_TAP_DANCE_DOUBLE(KC_LGUI,LGUI(FR_L)),
+    [DT_CRTL_C] = ACTION_TAP_DANCE_DOUBLE(KC_LGUI,KC_LCTRL(FR_C)),
+    [DT_CRTL_V] = ACTION_TAP_DANCE_DOUBLE(KC_LGUI,KC_LCTRL(FR_V)),
+    [DT_CRTL_Q] = ACTION_TAP_DANCE_DOUBLE(KC_LGUI,KC_LCTRL(FR_Q)),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
