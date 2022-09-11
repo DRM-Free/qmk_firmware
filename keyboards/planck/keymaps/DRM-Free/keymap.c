@@ -30,28 +30,36 @@ enum planck_keycodes {
 };
 
 enum {
-    CT_CLN,
+    CT_COMM,
+    CT_TILD_D,
+    CT_DOL_B,
+    CT_HASH_H,
+    CT_CL_G,
+    CT_DIA_P,
+    CT_DEG_K,
+    CT_QUOTE_W,
+    CT_DQUOTE_I,
+    CT_BACKSLASH_N,
+    CT_EXCL_O,
+    CT_INTER_M,
+    CT_Ù_U,
+    CT_À_A,
+    CT_CIRC_V,
     CT_PAR,
-    CT_SQUARE_BRA,
     CT_ANGLE_BRA,
+    CT_SQUARE_BRA,
     CT_BRACES,
     CT_DOT,
     CT_HYPHEN,
     CT_DIV,
     CT_STAR,
     CT_PLUS,
-    CT_VOL,
     CT_ESC,
     CT_META,
     CT_DEL,
     CT_TAB,
     CT_EQUAL,
-    CT_F3,
-    CT_F4,
-    CT_F5,
-    CT_ALTF3,
-    CT_ALTF4,
-    CCT_TEST,
+    CCT_E_É_È,
 };
 
 typedef enum {
@@ -69,9 +77,10 @@ typedef struct {
 td_state_t cur_dance(qk_tap_dance_state_t *state);
 
 // For the x tap dance. Put it here so it can be used in any keymap
-void x_finished(qk_tap_dance_state_t *state, void *user_data);
-void x_reset(qk_tap_dance_state_t *state, void *user_data);
-
+void e_finished(qk_tap_dance_state_t *state, void *user_data);
+void e_reset(qk_tap_dance_state_t *state, void *user_data);
+void bl_finished(qk_tap_dance_state_t *state, void *user_data);
+void bl_reset(qk_tap_dance_state_t *state, void *user_data);
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
@@ -88,10 +97,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_BASE] = LAYOUT_planck_grid(
-    TD(CCT_TEST),  TD(CT_DIV),    TD(CT_STAR),    TD(CT_PLUS),    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    QK_BOOTLOADER,
-    KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    TD(CT_CLN), KC_DOT,  KC_SLSH, KC_ENT ,
-    _______, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+    TD(CT_ESC),TD(CT_TILD_D),TD(CT_DOL_B),FR_X,FR_Y,FR_Z,TD(CT_HASH_H),FR_F,TD(CT_CL_G),TD(CT_DIA_P),TD(CT_DEG_K),QK_BOOTLOADER,
+    KC_DEL,TD(CT_QUOTE_W),TD(CT_DQUOTE_I),TD(CT_BACKSLASH_N),TD(CT_EXCL_O),TD(CT_INTER_M),TD(CT_Ù_U),KC_UP,TD(CT_CIRC_V),KC_L,MT(MOD_LSFT,FR_J), TD(CT_PAR),
+    KC_BACKSPACE, MT(MOD_LCTL,FR_C),MT(MOD_LALT,FR_T),MT(MOD_LSFT,FR_S),TD(CCT_E_É_È),TD(CT_À_A),MT(MOD_LCTL,FR_R),KC_LEFT,KC_DOWN,KC_RIGHT,MT(MOD_LCTL,FR_Q),TD(CT_ANGLE_BRA),
+    TD(CT_META), TD(CT_COMM), TD(CT_DOT), KC_ENTER, TD(CT_TAB),   KC_SPC,  KC_SPC,  TD(CT_EQUAL),   TD(CT_PLUS), TD(CT_HYPHEN), TD(CT_STAR),TD(CT_DIV)
 ),
 
 /* Lower
@@ -192,28 +201,36 @@ void tap_dance_tap_hold_reset(qk_tap_dance_state_t *state, void *user_data) {
     { .fn = {NULL, tap_dance_tap_hold_finished, tap_dance_tap_hold_reset}, .user_data = (void *)&((tap_dance_tap_hold_t){tap, hold, 0}), }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [CT_CLN] = ACTION_TAP_DANCE_TAP_HOLD(KC_COLN, KC_SCLN),
+    [CT_COMM] = ACTION_TAP_DANCE_TAP_HOLD(FR_COMM, FR_SCLN),
+    [CT_TILD_D] = ACTION_TAP_DANCE_TAP_HOLD(FR_D, FR_TILD),
+    [CT_DOL_B] = ACTION_TAP_DANCE_TAP_HOLD(FR_B,FR_DLR),
+    [CT_HASH_H] = ACTION_TAP_DANCE_TAP_HOLD(FR_H,FR_HASH),
+    [CT_CL_G] = ACTION_TAP_DANCE_TAP_HOLD(FR_G,KC_CAPS),
+    [CT_DIA_P] = ACTION_TAP_DANCE_TAP_HOLD(FR_P,FR_DIAE),
+    [CT_DEG_K] = ACTION_TAP_DANCE_TAP_HOLD(FR_K,FR_DEG),
+    [CT_QUOTE_W] = ACTION_TAP_DANCE_TAP_HOLD(FR_W,FR_QUES),
+    [CT_DQUOTE_I] = ACTION_TAP_DANCE_TAP_HOLD(FR_I,FR_DQUO),
+    [CT_BACKSLASH_N] = ACTION_TAP_DANCE_TAP_HOLD(FR_N,FR_BSLS),
+    [CT_EXCL_O] = ACTION_TAP_DANCE_TAP_HOLD(FR_EXLM,FR_O),
+    [CT_INTER_M] = ACTION_TAP_DANCE_TAP_HOLD(FR_QUES,FR_M),
+    [CT_Ù_U] = ACTION_TAP_DANCE_TAP_HOLD(FR_U,FR_UGRV),
+    [CT_À_A] = ACTION_TAP_DANCE_TAP_HOLD(FR_A,FR_AGRV),
+    [CT_CIRC_V] = ACTION_TAP_DANCE_TAP_HOLD(FR_V,FR_CIRC),
     [CT_PAR] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_PAREN,KC_RIGHT_PAREN),
-    [CT_SQUARE_BRA] = ACTION_TAP_DANCE_TAP_HOLD(KC_LBRACKET,KC_RBRACKET),
     [CT_ANGLE_BRA] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_ANGLE_BRACKET,KC_RIGHT_ANGLE_BRACKET),
+    [CT_SQUARE_BRA] = ACTION_TAP_DANCE_TAP_HOLD (FR_LBRC,FR_RBRC),
     [CT_BRACES] = ACTION_TAP_DANCE_TAP_HOLD(KC_LEFT_CURLY_BRACE,KC_RIGHT_CURLY_BRACE),
     [CT_DOT] = ACTION_TAP_DANCE_TAP_HOLD(FR_DOT, FR_COLN),
     [CT_HYPHEN] = ACTION_TAP_DANCE_TAP_HOLD(FR_MINS,FR_UNDS),
     [CT_DIV] = ACTION_TAP_DANCE_TAP_HOLD(FR_SLSH,FR_PERC),
     [CT_STAR] = ACTION_TAP_DANCE_TAP_HOLD(FR_ASTR, FR_AMPR),
     [CT_PLUS] = ACTION_TAP_DANCE_TAP_HOLD(KC_KP_PLUS,FR_PIPE),
-    [CT_VOL] = ACTION_TAP_DANCE_TAP_HOLD(KC_KB_VOLUME_DOWN,KC_KB_MUTE),
     [CT_ESC] = ACTION_TAP_DANCE_TAP_HOLD(KC_ESCAPE,KC_KB_POWER),
     [CT_META] = ACTION_TAP_DANCE_TAP_HOLD(KC_LGUI,LGUI(FR_L)),
     [CT_DEL] = ACTION_TAP_DANCE_TAP_HOLD(KC_DEL,KC_HOME),
     [CT_TAB] = ACTION_TAP_DANCE_TAP_HOLD(KC_TAB,LOWER),
     [CT_EQUAL] = ACTION_TAP_DANCE_TAP_HOLD(KC_KP_EQUAL, RAISE),
-    [CT_F3] = ACTION_TAP_DANCE_TAP_HOLD(FR_B,KC_F3),
-    [CT_F4] = ACTION_TAP_DANCE_TAP_HOLD(FR_X,KC_F4),
-    [CT_F5] = ACTION_TAP_DANCE_TAP_HOLD(FR_Y,KC_F5),
-    [CT_ALTF3] = ACTION_TAP_DANCE_TAP_HOLD(FR_Q,LALT(KC_F3)),
-    [CT_ALTF4] = ACTION_TAP_DANCE_TAP_HOLD(FR_U,LALT(KC_F4)),
-    [CCT_TEST] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, x_finished, x_reset),
+    [CCT_E_É_È] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, e_finished, e_reset),
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -227,7 +244,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
 
-    case TD(CT_CLN)...TD(CT_ALTF4):  // list all tap dance keycodes with tap-hold configurations
+    case TD(CT_COMM)...TD(CT_EQUAL):  // list all tap dance keycodes with tap-hold configurations
         action = &tap_dance_actions[TD_INDEX(keycode)];
         if (!record->event.pressed && action->state.count && !action->state.finished) {
             tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
@@ -250,21 +267,21 @@ static td_tap_t xtap_state = {
     .state = TD_NONE
 };
 
-void x_finished(qk_tap_dance_state_t *state, void *user_data) {
+void e_finished(qk_tap_dance_state_t *state, void *user_data) {
     xtap_state.state = cur_dance(state);
     switch (xtap_state.state) {
-        case TD_SINGLE_TAP: register_code(KC_SPACE); break;
-        case TD_SINGLE_HOLD: register_code(KC_Y); break;
-        case TD_DOUBLE_TAP: register_code(KC_Z); break;
+        case TD_SINGLE_TAP: register_code(FR_E); break;
+        case TD_SINGLE_HOLD: register_code(FR_EACU); break;
+        case TD_DOUBLE_TAP: register_code(FR_EGRV); break;
         default: break;
     }
 }
 
-void x_reset(qk_tap_dance_state_t *state, void *user_data) {
+void e_reset(qk_tap_dance_state_t *state, void *user_data) {
     switch (xtap_state.state) {
-        case TD_SINGLE_TAP: unregister_code(KC_SPACE); break;
-        case TD_SINGLE_HOLD: unregister_code(KC_Y); break;
-        case TD_DOUBLE_TAP: unregister_code(KC_Z); break;
+        case TD_SINGLE_TAP: unregister_code(FR_E); break;
+        case TD_SINGLE_HOLD: unregister_code(FR_EACU); break;
+        case TD_DOUBLE_TAP: unregister_code(FR_EGRV); break;
         default: break;
     }
     xtap_state.state = TD_NONE;
