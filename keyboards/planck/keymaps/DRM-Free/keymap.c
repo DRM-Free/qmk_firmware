@@ -22,7 +22,8 @@ enum planck_layers {
   _BASE,
   _LOWER,
   _RAISE,
-  _ADJUST
+  _ADJUST,
+  _GAMES
 };
 
 enum planck_keycodes {
@@ -57,8 +58,6 @@ enum {
     CT_ESC,
     CT_META,
     CT_DEL,
-    CT_TAB,
-    CT_EQUAL,
     CCT_E_É_È,
 };
 
@@ -97,10 +96,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_BASE] = LAYOUT_planck_grid(
-    TD(CT_ESC),TD(CT_TILD_D),TD(CT_DOL_B),FR_X,FR_Y,FR_Z,TD(CT_HASH_H),FR_F,TD(CT_CL_G),TD(CT_DIA_P),TD(CT_DEG_K),QK_BOOTLOADER,
-    KC_DEL,TD(CT_QUOTE_W),TD(CT_DQUOTE_I),TD(CT_BACKSLASH_N),TD(CT_EXCL_O),TD(CT_INTER_M),MT(MOD_LSFT,FR_L),TD(CT_Ù_U),KC_UP,TD(CT_CIRC_V),MT(MOD_LSFT,FR_J), TD(CT_PAR),
+    TD(CT_ESC),FR_X,TD(CT_DOL_B),TD(CT_TILD_D),FR_Y,FR_Z,TD(CT_CL_G),TD(CT_DQUOTE_I),TD(CT_HASH_H),TD(CT_DIA_P),TD(CT_DEG_K),FR_EXLM,
+    KC_DEL,TD(CT_QUOTE_W),FR_F,TD(CT_BACKSLASH_N),TD(CT_EXCL_O),TD(CT_INTER_M),MT(MOD_LSFT,FR_L),TD(CT_Ù_U),KC_UP,TD(CT_CIRC_V),MT(MOD_LSFT,FR_J), TD(CT_PAR),
     KC_BACKSPACE, MT(MOD_LCTL,FR_C),MT(MOD_LALT,FR_T),MT(MOD_LSFT,FR_S),TD(CCT_E_É_È),TD(CT_À_A),MT(MOD_LCTL,FR_R),KC_LEFT,KC_DOWN,KC_RIGHT,MT(MOD_LCTL,FR_Q),TD(CT_ANGLE_BRA),
-    TD(CT_META), TD(CT_COMM), TD(CT_DOT), KC_ENTER, TD(CT_TAB),   KC_SPC,  KC_SPC,  TD(CT_EQUAL),   TD(CT_PLUS), TD(CT_HYPHEN), TD(CT_STAR),TD(CT_DIV)
+    TD(CT_META), TD(CT_COMM), TD(CT_DOT), KC_KP_EQUAL, LT(_LOWER, KC_TAB),   KC_SPC,  KC_SPC,  LT(_RAISE, KC_ENT),   TD(CT_PLUS), TD(CT_HYPHEN), TD(CT_STAR),TD(CT_DIV)
 ),
 
 /* Lower
@@ -118,7 +117,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR,    KC_ASTR,    KC_LPRN, KC_RPRN, KC_BSPC,
     KC_DEL,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_UNDS,    KC_PLUS,    KC_LCBR, KC_RCBR, KC_PIPE,
     _______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  S(KC_NUHS), S(KC_NUBS), KC_HOME, KC_END,  _______,
-    _______, _______, _______, _______, _______, _______, _______, _______,    KC_MNXT,    KC_VOLD, KC_VOLU, KC_MPLY
+    QK_BOOTLOADER, _______, _______, TO(_GAMES), _______, _______, _______, _______,    KC_MNXT,    KC_VOLD, KC_VOLU, KC_MPLY
 ),
 
 /* Raise
@@ -156,6 +155,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, BASE,  _______,  _______,  _______,  _______,
     _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
+),
+
+[_GAMES] = LAYOUT_planck_grid(
+    KC_ESCAPE, KC_TAB,   KC_1,   KC_2,   KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,   KC_9, KC_0,
+    KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP, KC_Q,  KC_W,   KC_E,  KC_R, KC_T, KC_Y,  KC_U,  KC_I,  KC_O,  KC_P,
+    KC_LEFT_ALT, KC_LEFT_SHIFT,  KC_A,  KC_S,   KC_D,  KC_F,   KC_G,  KC_H, KC_J, KC_K, KC_L, KC_Z,
+    TO(_BASE), KC_LEFT_CTRL, KC_X, KC_C, KC_V, KC_SPC, KC_SPC, KC_B, KC_N,  KC_M, KC_BACKSPACE, KC_ENTER
 )
 
 };
@@ -228,8 +234,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [CT_ESC] = ACTION_TAP_DANCE_TAP_HOLD(KC_ESCAPE,KC_KB_POWER),
     [CT_META] = ACTION_TAP_DANCE_TAP_HOLD(KC_LGUI,LGUI(FR_L)),
     [CT_DEL] = ACTION_TAP_DANCE_TAP_HOLD(KC_DEL,KC_HOME),
-    [CT_TAB] = ACTION_TAP_DANCE_TAP_HOLD(KC_TAB,LOWER),
-    [CT_EQUAL] = ACTION_TAP_DANCE_TAP_HOLD(KC_KP_EQUAL, RAISE),
     [CCT_E_É_È] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, e_finished, e_reset),
 };
 
@@ -244,7 +248,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
       break;
 
-    case TD(CT_COMM)...TD(CT_EQUAL):  // list all tap dance keycodes with tap-hold configurations
+    case TD(CT_COMM)...TD(CT_DEL):  // list all tap dance keycodes with tap-hold configurations
         action = &tap_dance_actions[TD_INDEX(keycode)];
         if (!record->event.pressed && action->state.count && !action->state.finished) {
             tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
